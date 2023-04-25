@@ -4,6 +4,10 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
+    //TUTORIAL BOOL
+
+    public bool tutorialDone = false;
+
     // INSTRUCTIONS
     // This script must be on an object that has a Character Controller component.
     // It will add this component if the object does not already have it.
@@ -18,6 +22,12 @@ public class PlayerMovement : MonoBehaviour
     public float speedV = 2.0f;
     public float yaw = 0.0f;
     public float pitch = 0.0f;
+    float x;
+    float z;
+
+    //AUDIO SOURCE
+    public AudioSource marioJump;
+    public AudioSource marioOof;
 
     // This must be linked to the object that has the "Character Controller" in the inspector. You may need to add this component to the object
     public CharacterController controller;
@@ -47,38 +57,67 @@ public class PlayerMovement : MonoBehaviour
  
     private void Update()
     {
-        // These lines let the script rotate the player based on the mouse moving
-        yaw += speedH * Input.GetAxis("Mouse X");
-        pitch -= speedV * Input.GetAxis("Mouse Y");
+        //SO PLAYER CAN ONLY MOVE AFTER TUTORIAL IS DONE
 
-        // Get the Left/Right and Forward/Back values of the input being used (WASD, Joystick etc.)
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
- 
-        // Let the player jump if they are on the ground and they press the jump button
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (tutorialDone == true)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -5 * gravity);
+            // These lines let the script rotate the player based on the mouse moving
+            yaw += speedH * Input.GetAxis("Mouse X");
+            pitch -= speedV * Input.GetAxis("Mouse Y");
+
+            // Get the Left/Right and Forward/Back values of the input being used (WASD, Joystick etc.)
+            x = Input.GetAxis("Horizontal");
+            z = Input.GetAxis("Vertical");
+
+            // Let the player jump if they are on the ground and they press the jump button
+            if (Input.GetButtonDown("Jump") && isGrounded)
+            {
+                velocity.y = Mathf.Sqrt(jumpHeight * -5 * gravity);
+                marioJump.Play();
+            }
+
         }
 
-        // Rotate the player based off those mouse values we collected earlier
-        transform.eulerAngles = new Vector3(0.0f, yaw, 0.0f);
- 
-        // This is stealing the data about the player being on the ground from the character controller
-        isGrounded = controller.isGrounded;
- 
-        if (isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f;
-        }
- 
-        // This fakes gravity!
-        velocity.y += gravity * Time.deltaTime;
+            // Rotate the player based off those mouse values we collected earlier
+            transform.eulerAngles = new Vector3(0.0f, yaw, 0.0f);
 
-        // This takes the Left/Right and Forward/Back values to build a vector
-        Vector3 move = transform.right * x + transform.forward * z;
- 
-        // Finally, it applies that vector it just made to the character
-        controller.Move(move * speed * Time.deltaTime + velocity * Time.deltaTime);
+            // This is stealing the data about the player being on the ground from the character controller
+            isGrounded = controller.isGrounded;
+
+            if (isGrounded && velocity.y < 0)
+            {
+                velocity.y = -2f;
+            }
+
+            // This fakes gravity!
+            velocity.y += gravity * Time.deltaTime;
+
+            // This takes the Left/Right and Forward/Back values to build a vector
+            Vector3 move = transform.right * x + transform.forward * z;
+
+            // Finally, it applies that vector it just made to the character
+            controller.Move(move * speed * Time.deltaTime + velocity * Time.deltaTime);
+
+
+
+
+  
+
+        
+
+        
     }
+    //OOF COLLIDER SOUND
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.isTrigger == false)
+        {
+            marioOof.Play();
+
+        }
+
+
+    }
+
+
 }

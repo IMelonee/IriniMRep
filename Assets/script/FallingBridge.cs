@@ -12,6 +12,10 @@ yield return WaitForSeconds(Texttimer);
 
 public class FallingBridge : MonoBehaviour
 {
+
+    public Material fallingActivate;
+    public MeshRenderer materialRenderer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,13 +34,13 @@ public class FallingBridge : MonoBehaviour
 
     
         StartCoroutine(BridgeFallDelay());
+        materialRenderer.material = fallingActivate;
     }
 
-  
-
+ 
     IEnumerator BridgeFallDelay()
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(1.5f);
         GetComponent<Rigidbody>().useGravity = true;
 
     }
